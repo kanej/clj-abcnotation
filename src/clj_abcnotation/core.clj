@@ -3,15 +3,15 @@
 
 (def grammar
   "S = INFORMATIONFIELD* MOVEMENTS
-   <INFORMATIONFIELD> = idline | TITLELINE | AUTHORLINE | SOURCELINE | RYTHMNLINE | METERLINE | UNITNOTELENGTHLINE | KEYLINE
+   <INFORMATIONFIELD> = idline | titleline | authorline | sourceline | rythmnline | meterline | unitnotelengthline | keyline 
    idline = <'X:'> <WHITESPACE?> DIGIT+ <ENDLINE>
-   TITLELINE = <'T:'> FREETEXT <ENDLINE> 
-   AUTHORLINE = <'Z:'> FREETEXT <ENDLINE> 
-   SOURCELINE = <'S:'> FREETEXT <ENDLINE>
-   RYTHMNLINE = <'R:'> FREETEXT <ENDLINE>
-   METERLINE = <'M:'> FREETEXT <ENDLINE>
-   UNITNOTELENGTHLINE = <'L:'> FREETEXT <ENDLINE>
-   KEYLINE = <'K:'> FREETEXT <ENDLINE>
+   titleline = <'T:'> FREETEXT <ENDLINE> 
+   authorline = <'Z:'> FREETEXT <ENDLINE> 
+   sourceline = <'S:'> FREETEXT <ENDLINE>
+   rythmnline = <'R:'> FREETEXT <ENDLINE>
+   meterline = <'M:'> FREETEXT <ENDLINE>
+   unitnotelengthline = <'L:'> FREETEXT <ENDLINE>
+   keyline = <'K:'> FREETEXT <ENDLINE>
 
    MOVEMENTS = MOVEMENT (<WHITESPACE?> MOVEMENT)* 
    MOVEMENT = <'|:'> <WHITESPACE?> BARS <WHITESPACE?> <':|'>
@@ -37,6 +37,9 @@
 (defn idline->id [id-as-string]
   [:id (Integer/parseInt id-as-string)])
 
+(defn string-trim [key]
+  (fn [text] [key (.trim text)]))
+
 (def abc-parse (insta/parser grammar))
 
 (defn vec->map [v]
@@ -46,9 +49,17 @@
   (->> text
     (abc-parse) 
     (insta/transform 
-      {:NOTE note->tuple 
-       :S vector
-       :idline idline->id})
+      {:NOTE               note->tuple 
+       :S                  vector
+       :idline             idline->id
+       :titleline          (string-trim :title)
+       :authorline         (string-trim :author)
+       :sourceline         (string-trim :source)
+       :rythmnline         (string-trim :rythmn)
+       :meterline          (string-trim :meter)
+       :unitnotelengthline (string-trim :keynotelength)
+       :keyline            (string-trim :key)
+      })
     (vec->map)))
 
 (defn flatten-to-notes [composition]

@@ -3,7 +3,7 @@
             [clj-abcnotation.core :refer :all]))
 
 (def butterfly 
-  "X: 1
+"X: 1
 T: Butterfly, The
 Z: Jeremy
 S: http://thesession.org/tunes/10#setting10
@@ -15,7 +15,6 @@ K: Emin
 |:B2d e2f g3|B2d g2e dBA|B2d e2f g2a|b2a g2e dBA:|
 |:B3 B2A G2A|B3 BAB dBA|B3 B2A G2A|B2d g2e dBA:|") 
 
-
 (def single-bar "|: def :|")
 
 (deftest parsing-notes
@@ -25,4 +24,11 @@ K: Emin
 (deftest parsing-full-piece
   (testing "Parse the butterfly including its information fields"
     (let [song (parse butterfly)]
-      (is (= 1 (:id song))))))
+      (is (= 1 (:id song)))
+      (is (= "Butterfly, The" (:title song)))
+      (is (= "Jeremy" (:author song)))
+      (is (= "http://thesession.org/tunes/10#setting10" (:source song)))
+      (is (= "slip jig" (:rythmn song)))
+      (is (= "9/8" (:meter song)))
+      (is (= "1/8" (:keynotelength song)))
+      (is (= "Emin" (:key song))))))
