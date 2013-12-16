@@ -17,6 +17,6 @@ The basic usages is:
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013 John Kane
 
 Distributed under the Eclipse Public License, the same as Clojure.
