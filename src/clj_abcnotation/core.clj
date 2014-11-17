@@ -28,11 +28,15 @@
   { "A" :A4 "B" :b4 "C" :c4 "D" :d4 "E" :e4 "F" :f#4 "G" :g4
     "a" :A5 "b" :B5 "c" :C5 "d" :D5 "e" :E5 "f" :F#5 "g" :G5 })
 
-(defn note->tuple
+(def letter->pitch
+  { "C" 0 "D" 1 "E" 2 "F" 3 "G" 4 "A" 5 "B" 6
+    "c" 7 "d" 8 "e" 9 "f" 10 "g" 11 "a" 12 "b" 13 })
+
+(defn note->map
   ([letter]
-   (note->tuple letter "1"))
+   (note->map letter "1"))
   ([letter digit]
-     [(letter->note letter) (Integer/parseInt digit)]))
+     {:note letter :pitch (letter->pitch letter) :duration (Integer/parseInt digit) :part nil :time nil}))
 
 (defn idline->id [id-as-string]
   [:id (Integer/parseInt id-as-string)])
@@ -48,11 +52,20 @@
 (defn vec->map [v]
   (apply hash-map (apply concat v)))
 
+(defn interpolate-duration-into-bar [[time bars] [_ & notes]]
+  (let [durations (map :duration notes)
+        [updated-time timings] (reduce (fn [[time timings] duration] [(+ time duration) (conj timings (+ time duration))]) [time []] durations)
+        updated-notes (map merge notes (map #(hash-map :time %) timings))]
+    [updated-time updated-notes]))
+
+(defn interpolate-duration [{:keys [notes] :as notation}]
+  (reduce interpolate-duration-into-bar [0 []] notes))
+
 (defn parse [text]
   (->> text
     (abc-parse)
     (insta/transform
-      {:NOTE               note->tuple
+      {:NOTE               note->map
        :S                  vector
        :idline             idline->id
        :titleline          (string-trim :title)
@@ -65,6 +78,7 @@
        :MOVEMENTS          (fn [& movs] [:notes movs])
       })
     (vec->map)
+    ;;(interpolate-duration)
        ))
 
 (comment (defn flatten-to-notes [composition]

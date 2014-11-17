@@ -27,3 +27,13 @@ K: Emin
 (comment
   (notation/parse butterfly)
   )
+
+
+(def bar [:BAR
+          {:note "B", :pitch 6, :duration 2, :part nil, :time nil}
+          {:note "d", :pitch 8, :duration 1, :part nil, :time nil}
+          {:note "g", :pitch 11, :duration 2, :part nil, :time nil}
+          {:note "e", :pitch 9, :duration 1, :part nil, :time nil}
+          {:note "d", :pitch 8, :duration 1, :part nil, :time nil}
+          {:note "B", :pitch 6, :duration 1, :part nil, :time nil}
+          {:note "A", :pitch 5, :duration 1, :part nil, :time nil}])
