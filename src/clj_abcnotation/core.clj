@@ -52,14 +52,16 @@
 (defn vec->map [v]
   (apply hash-map (apply concat v)))
 
-(defn interpolate-duration-into-bar [[time bars] [_ & notes]]
+(defn interpolate-timings-into-bar [[time bars] [_ & notes]]
   (let [durations (map :duration notes)
         [updated-time timings] (reduce (fn [[time timings] duration] [(+ time duration) (conj timings (+ time duration))]) [time []] durations)
-        updated-notes (map merge notes (map #(hash-map :time %) timings))]
-    [updated-time updated-notes]))
+        updated-notes (map merge notes (map #(hash-map :time %) timings))
+        update-bar (into [] (cons :BAR updated-notes))]
+    [updated-time (conj bars update-bar)]))
 
-(defn interpolate-duration [{:keys [notes] :as notation}]
-  (reduce interpolate-duration-into-bar [0 []] notes))
+(defn interpolate-timings [{:keys [notes] :as notation}]
+  (let [[_ updated-notes] (reduce interpolate-timings-into-bar [0 []] notes)]
+    (assoc notation :notes updated-notes)))
 
 (defn parse [text]
   (->> text
@@ -78,10 +80,4 @@
        :MOVEMENTS          (fn [& movs] [:notes movs])
       })
     (vec->map)
-    ;;(interpolate-duration)
-       ))
-
-(comment (defn flatten-to-notes [composition]
-   (->> (:notes composition)
-        (mapcat rest)
-        vec)))
+    (interpolate-timings)))

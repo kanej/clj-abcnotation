@@ -37,3 +37,10 @@ K: Emin
           {:note "d", :pitch 8, :duration 1, :part nil, :time nil}
           {:note "B", :pitch 6, :duration 1, :part nil, :time nil}
           {:note "A", :pitch 5, :duration 1, :part nil, :time nil}])
+
+(def bars {:notes [bar bar]})
+
+(defn flatten-to-notes [composition]
+   (->> (:notes composition)
+        (mapcat rest)
+        vec))
