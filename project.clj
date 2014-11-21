@@ -8,4 +8,6 @@
                  [overtone "0.9.1"]
                  [leipzig "0.8.1"]]
   :profiles {:dev {:source-paths ["dev"]
-                   :dependencies [[org.clojure/tools.namespace "0.2.3"]]}})
+                   :dependencies [[org.clojure/tools.namespace "0.2.3"]
+                                  [lein-light-nrepl "0.1.0"]]
+                   :repl-options {:nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]}}})

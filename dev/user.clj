@@ -9,6 +9,10 @@
 
             [clj-abcnotation.core :as notation]))
 
+(defn go []
+  (require 'clj-abcnotation.leipzig)
+  (in-ns 'clj-abcnotation.leipzig))
+
 (def butterfly
   "X: 1
 T: Butterfly, The

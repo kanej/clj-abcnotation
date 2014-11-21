@@ -24,13 +24,11 @@
    <DIGIT> = #'[0-9]'
    <WHITESPACE> = #'\\s+'")
 
-(def letter->note
-  { "A" :A4 "B" :b4 "C" :c4 "D" :d4 "E" :e4 "F" :f#4 "G" :g4
-    "a" :A5 "b" :B5 "c" :C5 "d" :D5 "e" :E5 "f" :F#5 "g" :G5 })
-
 (def letter->pitch
-  { "C" 0 "D" 1 "E" 2 "F" 3 "G" 4 "A" 5 "B" 6
-    "c" 7 "d" 8 "e" 9 "f" 10 "g" 11 "a" 12 "b" 13 })
+  { "C," -7 "D," -6 "E," -5 "F," -4 "G," -3 "a," -2 "b," -1
+    "C"   0 "D"   1 "E"   2 "F"   3 "G"   4 "A"   5 "B"   6
+    "c"   7 "d"   8 "e"   9 "f"  10 "g"  11 "a"  12 "b"  13
+    "c'" 14 "d'" 15 "e'" 16 "f'" 17 "g'" 18 "a'" 19 "b'" 20})
 
 (defn note->map
   ([letter]
@@ -54,7 +52,10 @@
 
 (defn interpolate-timings-into-bar [[time bars] [_ & notes]]
   (let [durations (map :duration notes)
-        [updated-time timings] (reduce (fn [[time timings] duration] [(+ time duration) (conj timings (+ time duration))]) [time []] durations)
+        [updated-time timings] (reduce
+                                (fn [[time timings] duration] [(+ time duration) (conj timings time)])
+                                [time []]
+                                durations)
         updated-notes (map merge notes (map #(hash-map :time %) timings))
         update-bar (into [] (cons :BAR updated-notes))]
     [updated-time (conj bars update-bar)]))
